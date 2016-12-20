@@ -6,24 +6,45 @@ using namespace std;
 void graphVizOutput(int** M, int cities, int* path_arr, int size) // test version - only writes the full matrix into graph 
 {
 	ofstream outFile("out.dot"); //*.dot ?
-	outFile << "graph\n{\n"; 
+	outFile << "graph\n{\n";
+	bool M_chck[cities][cities];
 	for(int i = 0; i < cities; i++)
 	{
 		for(int j = 0; j < cities; j++)
 		{
-			if((i != j) &&(M[ i ][ j ] != 0))
+			M_chck[ i ][ j ] = false;
+		}
+	}
+	int i_c = 0;
+	for(int i = 0; i < cities; i++)
+	{
+		for(int j = 0; j < cities; j++)
+		{
+				// cout << i << " : " << j << "\n";
+			if( ((i == (path_arr[ i_c ] - 1)) && (j == (path_arr[ i_c + 1] - 1))) || ((i == (path_arr[ i_c + 1] - 1)) && (j == (path_arr[ i_c ] - 1))) )
 			{
-				outFile << "\t" << i + 1 << "--" << j + 1 <<"[label=\"" << M[ i ][ j ] <<"\",weight=\"" << M[ i ][ j ] << "\"];\n";
+				outFile << "\t" << i + 1 << "--" << j + 1 <<"[label=\"" << M[ i ][ j ] <<"\",weight=\"" << M[ i ][ j ] << "\", color=\"red\"];\n";
 				M[j][i] = 0;
+				i_c++;
+				i = 0;
+				j = 0;
+				M_chck[ i ][ j ] = true;
+				M_chck[ j ][ i ] = true;
 			}
 		}
 	}
-	/////////////////////////////////////////
-	// for(int i = 0; i < size - 1; i++)
-	// {
-	// 	outFile << "\t" << path_arr[ i ] + 1 << "--" << path_arr[ i + 1 ] + 1 <<"[label=\"" << M[ path_arr[ i ] ][ path_arr[ i + 1 ] ] <<"\",weight=\"" << M[ path_arr[ i ] ][ path_arr[ i + 1 ] ] << "\"];\n";
-	// }
-    outFile << "}";
+	for(int i = 0; i < cities; i++)
+	{
+		for(int j = i; j < cities; j++)
+		{
+			if((M_chck[ i ][ j ] == false) && (M[i][j] > 0) && (M[j][i] > 0) && (M_chck[ j ][ i ] == false) && (i != j) )
+			{
+			 	outFile << "\t" << i + 1 << "--" << j + 1 <<"[label=\"" << M[ i ][ j ] <<"\",weight=\"" << M[ i ][ j ] << "\"];\n";
+			 	//M[j][i] = 0;
+			}
+		}
+	}
+	outFile << "}";
 	outFile.close();
 }
 
@@ -113,12 +134,21 @@ int main()
 	        tmp = min; // the current vertex is now min, so we write it to tmp
 	    }
 	    //output
+	    int result_output[ cities + 1 ];
 	    cout<<"The path: \n" << endl;
 	    cout << start_city  << " ";  // 
+	    result_output[ 0 ] = start_city;
 	    for(i = 0; i < cities - 1; i++)
+	    {
 	        cout << arr_res[ i ] + 1 << " ";
-	    cout << start_city << endl;
-		graphVizOutput(Matrix, cities, arr_res, res);
+	        result_output[ i + 1 ] = arr_res[ i ]  + 1;
+	    }
+	    result_output[ cities ] = start_city;
+	    cout << start_city << "\n\n" << endl;
+	    //!!! res is equal to cities
+	    //for(int i = 0; i < cities + 1; i++) cout << result_output[ i ] << "->";
+		//graphVizOutput(Matrix, cities, arr_res, res);
+		graphVizOutput(Matrix, cities, result_output, res);
 		return 0;
 	}
 	if(choice == '2') //borders and brunches 
@@ -130,5 +160,6 @@ int main()
 	{
 		return -1;
 	}
+	//free the matrix!!!
 	return 0;
 }
