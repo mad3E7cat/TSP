@@ -5,7 +5,26 @@
 using namespace std;
 void graphVizOutput(int** M, int cities, int* path_arr, int size) // test version - only writes the full matrix into graph 
 {
-	ofstream outFile("out.dot"); //*.dot ?
+	//file 2
+	ofstream outFile2("out_basic.dot"); //*.dot ?
+	outFile2 << "graph\n{\n";
+	for(int i = 0; i < cities; i++)
+	{
+		for(int j = i; j < cities; j++)
+		{
+			if(M[ i ][ j ] > 0)
+			{
+			 	outFile2 << "\t" << i + 1 << "--" << j + 1 <<"[label=\"" << M[ i ][ j ] <<"\",weight=\"" << M[ i ][ j ] << "\"];\n";
+			 	//M[ j ][ i ] = 0;
+
+			}
+		}
+	}
+	outFile2 << "}";
+	outFile2.close();
+	//
+	//
+	ofstream outFile("out_path.dot"); //*.dot ?
 	outFile << "graph\n{\n";
 	bool M_chck[cities][cities];
 	for(int i = 0; i < cities; i++)
@@ -46,6 +65,7 @@ void graphVizOutput(int** M, int cities, int* path_arr, int size) // test versio
 	}
 	outFile << "}";
 	outFile.close();
+	
 }
 
 int main()
